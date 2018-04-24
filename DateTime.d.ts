@@ -72,10 +72,8 @@ declare namespace ReactDatetimeClass {
          Moment.js locale needs to be loaded to be used, see i18n docs.
          */
         locale?: string;
-        /*
-         Whether to interpret input times as UTC or the user's local timezone.
-         */
-        utc?: boolean;
+
+        utcOffset?: number;
         /*
          Callback trigger when the date changes. The callback receives the selected `moment` object as
          only parameter, if the date in the input is valid. If the date in the input is not valid, the
