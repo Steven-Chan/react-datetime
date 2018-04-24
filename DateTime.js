@@ -29,7 +29,7 @@ var Datetime = createClass({
 		onNavigateBack: TYPES.func,
 		onNavigateForward: TYPES.func,
 		locale: TYPES.string,
-		utc: TYPES.bool,
+		utcOffset: TYPES.number,
 		input: TYPES.bool,
 		// dateFormat: TYPES.string | TYPES.bool,
 		// timeFormat: TYPES.string | TYPES.bool,
@@ -177,21 +177,12 @@ var Datetime = createClass({
 			}
 		}
 
-		if ( nextProps.utc !== this.props.utc ) {
-			if ( nextProps.utc ) {
-				if ( this.state.viewDate )
-					updatedState.viewDate = this.state.viewDate.clone().utc();
-				if ( this.state.selectedDate ) {
-					updatedState.selectedDate = this.state.selectedDate.clone().utc();
-					updatedState.inputValue = updatedState.selectedDate.format( formats.datetime );
-				}
-			} else {
-				if ( this.state.viewDate )
-					updatedState.viewDate = this.state.viewDate.clone().local();
-				if ( this.state.selectedDate ) {
-					updatedState.selectedDate = this.state.selectedDate.clone().local();
-					updatedState.inputValue = updatedState.selectedDate.format(formats.datetime);
-				}
+		if ( nextProps.utcOffset !== this.props.utcOffset ) {
+			if ( this.state.viewDate )
+				updatedState.viewDate = this.state.viewDate.clone().offset( nextProps.utcOffset );
+			if ( this.state.selectedDate ) {
+				updatedState.selectedDate = this.state.selectedDate.clone().offset( nextProps.utcOffset );
+				updatedState.inputValue = updatedState.selectedDate.format( formats.datetime );
 			}
 		}
 
@@ -384,8 +375,9 @@ var Datetime = createClass({
 
 	localMoment: function( date, format, props ) {
 		props = props || this.props;
-		var momentFn = props.utc ? moment.utc : moment;
+		var momentFn = moment;
 		var m = momentFn( date, format, props.strictParsing );
+		m.utcOffset( props.utcOffset );
 		if ( props.locale )
 			m.locale( props.locale );
 		return m;
@@ -472,7 +464,7 @@ Datetime.defaultProps = {
 	strictParsing: true,
 	closeOnSelect: false,
 	closeOnTab: true,
-	utc: false
+	utcOffset: 0,
 };
 
 // Make moment accessible through the Datetime class
